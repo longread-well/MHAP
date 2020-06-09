@@ -27,24 +27,32 @@ The optional -f flag provides a file of repetitive k-mers which should be biased
 .. code-block:: bash
 
    $ head kmers.ignore
-   464
    GGGGGGGGGGGGG	0.0005
 
-means the k-mer GGGGGGGGGGG represents 0.05% of the k-mers in the dataset (so if there are 100,000 total k-mers, it occurs 50 times). The first line specifies the total number of k-mer entries in the file.
+means the k-mer GGGGGGGGGGG represents 0.05% of the k-mers in the dataset (so if there are 100,000 total k-mers, it occurs 50 times).
+
+(Optionally, the first line of the file can specify two integers instead: these specify the initial
+size of the hash map used to store values and the Bloom filter used to store the list of kmers.)
 
 It is also possible to use the k-mer list as a positive selection as was used in `Carvalho et. al. <http://biorxiv.org/content/biorxiv/early/2016/05/14/053256.full.pdf>`_. Specify the k-mer list as above and the flag:
 
 .. code-block:: bash
 
-   --supress-noise 2
+   --suppress-noise 1
 
-which will not allow any k-mer not in in the input file to be a minmer. The k-mers above --filter-threshold will be ignored as repeats.
+which will not allow any k-mer not in in the input file to be a minmer. The k-mers above
+--filter-threshold will be ignored as repeats; alternatively, the second column of the file can be
+omitted in which case no such filtering will be applied. Note that this functionality is currently
+implemented using a Bloom filter, which implies that a kmer not in the file might occasionally be
+used as a minmer, but this is expected to be rare.
+
+Finally, specifying
 
 .. code-block:: bash
 
-   --supress-noise 1
+   --suppress-noise 2
 
-will downweight any k-mer not in the input file to bias against its selection as a minmer. The k-mers above --filter-threshold will be downeighted as repeats.
+will downweight any k-mer not in the input file to bias against its selection as a minmer. The k-mers above --filter-threshold will be downweighted as repeats.
 
 Constructing binary index
 -----------------
@@ -109,8 +117,8 @@ The full list of options is available via command-line help (--help or -h). Belo
 			Set all unset parameters for the default settings. Same defaults are applied to Nanopore and Pacbio reads. 0) None, 1) Default, 2) Fast, 3) Sensitive.
 		--store-full-id, default = false
 			Store full IDs as seen in FASTA file, rather than storing just the sequence position in the file. Some FASTA files have long IDS, slowing output of results. This options is ignored when using compressed file format.
-		--supress-noise, default = 0
-			[int] 0) Does nothing, 1) completely removes any k-mers not specified in the filter file, 2) supresses k-mers not specified in the filter file, similar to repeats. 
+		--suppress-noise, default = 0
+			[int] 0) Does nothing, 1) completely removes any k-mers not specified in the filter file, 2) suppresses k-mers not specified in the filter file, similar to repeats. 
 		--threshold, default = 0.78
 			[double], the threshold cutoff for the second stage sort-merge filter. This is based on the identity score computed from the Jaccard distance of k-mers (size given by ordered-kmer-size) in the overlapping regions.
 		--version, default = false
