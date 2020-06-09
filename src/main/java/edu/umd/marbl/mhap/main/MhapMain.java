@@ -119,7 +119,7 @@ public final class MhapMain
 		options.addOption("--min-olap-length", "[int], The minimum length of the read that used for overlapping. Used to filter out short reads from FASTA file.", DEFAULT_MIN_OVL_LENGTH);
 		options.addOption("--no-self", "Do not compute the overlaps between sequences inside a box. Should be used when the to and from sequences are coming from different files.", false);
 		options.addOption("--store-full-id", "Store full IDs as seen in FASTA files, rather than storing just the sequence position in the file. Some FASTA files have long IDS, slowing output of results. This options is ignored when using compressed file format. Indexed file (-s) is indexed first, followed by -q files in alphabetical order.", false);
-		options.addOption("--supress-noise", "[int] 0) Does nothing, 1) completely removes any k-mers not specified in the filter file, 2) supresses k-mers not specified in the filter file, similar to repeats. ", 0);
+		options.addOption("--suppress-noise", "[int] 0) Does nothing, 1) completely removes any k-mers not specified in the filter file, 2) suppresses k-mers not specified in the filter file, similar to repeats. ", 0);
 		options.addOption("--no-tf", "Do not perform the tf weighing, in the tf-idf weighing.", false);
 		options.addOption("--no-rc", "Do not store or do comparison of the reverse compliment strings.", false);
 		options.addOption("--settings", "Set all unset parameters for the default settings. Same defaults are applied to Nanopore and Pacbio reads. 0) None, 1) Default, 2) Fast, 3) Sensitive.", 0);
@@ -290,9 +290,9 @@ public final class MhapMain
 		}
 
 		//check range
-		if (options.get("--supress-noise").getInteger()<0 || options.get("--supress-noise").getInteger()>2)
+		if (options.get("--suppress-noise").getInteger()<0 || options.get("--suppress-noise").getInteger()>2)
 		{
-			System.out.println("The --supress-noise parameter must be in [0,2].");
+			System.out.println("The --suppress-noise parameter must be in [0,2].");
 			System.exit(1);
 		}
 
@@ -350,7 +350,7 @@ public final class MhapMain
 					offset = this.repeatWeight;
 				
 				double maxFraction = options.get("--filter-threshold").getDouble();
-				int removeUnique = options.get("--supress-noise").getInteger();
+				int removeUnique = options.get("--suppress-noise").getInteger();
 				boolean noTf = options.get("--no-tf").getBoolean();
 				double range = options.get("--repeat-idf-scale").getDouble();
 			

@@ -100,17 +100,26 @@ public final class FrequencyCounts
 			{
 				// we assume the line has two entries, the first is the size of the bloom filter, the second is the size of the filter set
 				String[] splitLine = line.trim().split("\\s+");
-				sizeBloom = Long.parseLong(splitLine[0]);
-				sizeRepeat = Long.parseLong(splitLine[1]);
-				System.err.println("Read in values for repeat " + sizeRepeat + " and " + sizeBloom);
-			
-				if (sizeBloom<0L || sizeRepeat <0L)
-					throw new MhapRuntimeException("K-mer filter file size line must have positive long value.");
-				else
-				if (sizeBloom==0L)
+				try
 				{
-					System.err.println("Warning, k-mer filter file has zero elements.");
-					sizeBloom = 1L;
+					sizeBloom = Long.parseLong(splitLine[0]);
+					sizeRepeat = Long.parseLong(splitLine[1]);
+					System.err.println("Read in values for repeat " + sizeRepeat + " and " + sizeBloom);
+			
+					if (sizeBloom<0L || sizeRepeat <0L)
+						throw new MhapRuntimeException("K-mer filter file size line must have positive long value.");
+					else
+					if (sizeBloom==0L)
+					{
+						System.err.println("Warning, k-mer filter file has zero elements.");
+						sizeBloom = 1L;
+					}
+					// we successfully read a counts line, so read the next line ready for the loop below
+					line = bf.readLine();
+				}
+				catch( Exception e ) {
+					System.err.println("k-mer filter file has no counts specified, initialising hash map and filter of size 1.");
+					sizeBloom = sizeRepeat = 1 ;
 				}
 			}
 			
@@ -146,7 +155,7 @@ public final class FrequencyCounts
 		final ThreadPoolExecutor executor = new ThreadPoolExecutor(numThreads, numThreads, 100L, TimeUnit.MILLISECONDS,
 				new LinkedBlockingQueue<Runnable>(10000), new ThreadPoolExecutor.CallerRunsPolicy());
 		
-		line = bf.readLine();			
+		//line = bf.readLine(); // GB: replaced with the call above
 		while (line != null)
 		{
 			String currLine = line;
